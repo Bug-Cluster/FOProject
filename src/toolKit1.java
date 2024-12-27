@@ -12,6 +12,23 @@ public class toolKit1 {
         return returnArray;
     }
 
+    // tests if value is acceptable by different strict levels (High -> more strict)
+    boolean safeToken(String s, int level){
+        if(level > 0 && (s.contains("{") || s.contains("}"))){
+            return false;
+        }
+        if(level > 1 && (s.contains("+") || s.contains("-") || s.contains("/") || s.contains("*") || s.contains("%"))){
+            return false;
+        }
+        if(level > 2 && (s.contains("(") || s.contains(")"))){
+            return false;
+        }
+        if(level > 3 && (s.contains("\"") || s.contains("."))){
+            return false;
+        }
+        return true;
+    }
+
     boolean[] quoteDetection(String s){
         boolean[] output = new boolean[3];
         if(s == null){

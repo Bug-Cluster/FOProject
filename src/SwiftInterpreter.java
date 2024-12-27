@@ -7,7 +7,8 @@ public class SwiftInterpreter extends toolKit1 {
     private Map<String, Object> Values = new HashMap<>();
 
     public void setCode(String code){
-        this.code = code.split(";");
+        this.code = code.replace("\n","").split(";");
+        print(this.code);
     }
 
     public void run(final int limit){
@@ -17,13 +18,13 @@ public class SwiftInterpreter extends toolKit1 {
 
         while(ExeLine < FinishLine){
             int errorCode = detectFunction(code[ExeLine]);
-            ExeLine ++;
 
             // exception detection
             if(errorCode != -1){
-                System.out.println((ExeLine + 1) + ") " + LogExeption(errorCode));
+                System.out.println((ExeLine + 1) + ") " + errorCode + ": " + LogException(errorCode));
                 break;
             }
+            ExeLine ++;
         }
         System.out.println("Program has finished");
     }
@@ -47,24 +48,43 @@ public class SwiftInterpreter extends toolKit1 {
         String VarName;
         Object VarState = null;
         int len = Line.length;
-        print(Line);
-        print(len);
+
         if(len > 1) {
+            if(!safeToken(Line[1],3)){
+                return 0;
+            }
             VarName = Line[1];
             if(len > 2 && Line[2].equals("=")){
                 if(len > 3) {
                     switch(Line[3].indexOf('"')){
                         case -1:
-                            VarState = Line[3];
+                            if(len != 4){
+                                return 0;
+                            }
+                            VarState = constructNumber(Line[3]);
+                            if(VarState == null){
+                                return 0;
+                            }
                             break;
                         case 0:
-                            print(constructString(sliceArray(Line,3,len-1)));
+                            VarState = constructString(sliceArray(Line,3,len-1));
+                            if(VarState == null){
+                                return 0;
+                            }
+                            break;
+                        default:
+                            return 0;
                     }
                 }
             }
         }
         else{return 0;}
 
+        if(Values.containsKey(VarName)){
+            return 2;
+        }
+        print("New variable created: " +  VarName + " = " + VarState);
+        Values.put(VarName,VarState);
         return -1;
     }
 
@@ -105,8 +125,20 @@ public class SwiftInterpreter extends toolKit1 {
         }
     }
 
+    private Object constructNumber(String s){
+        if(!s.contains(".")){
+            return Integer.parseInt(s);
+        }
+        else if(s.split("\\.").length == 2){
+            if(s.charAt(0) == '.' || s.charAt(s.length()-1) == '.'){
+                return null;
+            }
+            return Float.parseFloat(s);
+        }
+        return null;
+    }
     //Other
-    private String LogExeption(int e){
+    private String LogException(int e){
         String Error = "Exeption not found";
         switch (e){
             case 0:
@@ -115,6 +147,8 @@ public class SwiftInterpreter extends toolKit1 {
             case 1:
                 Error = "Null";
                 break;
+            case 2:
+                Error = "Variable already exists";
         }
         return Error;
     }
