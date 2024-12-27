@@ -1,8 +1,8 @@
 class Main{
     public static void main(String[] args) {
         String code = """
-                var a = 3;
-                var b = 3;
+                var a = 1;
+                var B = "i";
                 if a > b {
                     print("a > b");
                 }

@@ -1,4 +1,3 @@
-import java.io.Serial;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +21,7 @@ public class SwiftInterpreter extends toolKit1 {
 
             // exception detection
             if(errorCode != -1){
-                System.out.println(errorCode + ") " + LogExeption(errorCode));
+                System.out.println((ExeLine + 1) + ") " + LogExeption(errorCode));
                 break;
             }
         }
@@ -49,7 +48,7 @@ public class SwiftInterpreter extends toolKit1 {
         Object VarState = null;
         int len = Line.length;
         print(Line);
-
+        print(len);
         if(len > 1) {
             VarName = Line[1];
             if(len > 2 && Line[2].equals("=")){
@@ -59,7 +58,7 @@ public class SwiftInterpreter extends toolKit1 {
                             VarState = Line[3];
                             break;
                         case 0:
-                            print(sliceArray(Line,3,len-1));
+                            print(constructString(sliceArray(Line,3,len-1)));
                     }
                 }
             }
@@ -69,8 +68,41 @@ public class SwiftInterpreter extends toolKit1 {
         return -1;
     }
 
-    private String constructString(){
-        return null;
+    private String constructString(String[] array){
+        if(array.length > 1){
+            StringBuilder output = new StringBuilder();
+            output.append(array[0].replace("\"",""));
+            output.append(" ");
+            for(int i = 1; i < array.length; i++) {
+                if(array[i].indexOf('"') != -1){
+                    boolean[] o = quoteDetection(array[i]);
+                    if(o[1] || o[0]){
+                        return null;
+                    }
+                    if(o[2] && i != array.length - 1){
+                        return null;
+                    }
+                    output.append(array[i].replace("\"",""));
+                }
+                else {
+                    if(i == array.length - 1){
+                        return null;
+                    }
+                    output.append(array[i]);
+                    output.append(" ");
+                }
+            }
+            return output.toString();
+        }
+        else{
+            boolean[] o = quoteDetection(array[0]);
+            if(o[0] && !o[1] && o[2]){
+                return array[0].replace("\"","");
+            }
+            else{
+                return null;
+            }
+        }
     }
 
     //Other
