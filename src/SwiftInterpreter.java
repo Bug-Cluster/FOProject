@@ -3,7 +3,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SwiftInterpreter {
+public class SwiftInterpreter extends toolKit1 {
     private String[] code;
     private Map<String, Object> Values = new HashMap<>();
 
@@ -48,6 +48,7 @@ public class SwiftInterpreter {
         String VarName;
         Object VarState = null;
         int len = Line.length;
+        print(Line);
 
         if(len > 1) {
             VarName = Line[1];
@@ -64,7 +65,6 @@ public class SwiftInterpreter {
             }
         }
         else{return 0;}
-
 
         return -1;
     }
@@ -85,18 +85,6 @@ public class SwiftInterpreter {
                 break;
         }
         return Error;
-    }
-    private String[] sliceArray(String[] arr, int start, int end){
-        if(end > start){
-            throw new IllegalArgumentException();
-        }
-        String[] returnArray = new String[end-start];
-        int j = 0;
-        for (int i = start; i < end; i++) {
-            j ++;
-            returnArray[j] = arr[i];
-        }
-        return returnArray;
     }
 
     // For me, for quick debuting, should not be used in main code. (if i did not miss it)
