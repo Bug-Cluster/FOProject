@@ -9,7 +9,6 @@ public class Main {
                 DEBUG!ListVar;
                 """;
         Executor swiftExe = new Executor();
-        swiftExe.setCode(code);
-        swiftExe.run(-1);
+        swiftExe.run(code);
     }
 }

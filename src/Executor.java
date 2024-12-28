@@ -4,15 +4,35 @@ public class Executor extends toolKit {
 
     private String Code; //code it runs
     private int Pointer = 0; //tracks where executor is at
-    private Map<String, Object> Variables = new HashMap<>();
-    private int subLoopDepth = 0;
+    private Map<String, Object> UpperVariables; //stores global variables (used only for sub loop in recursion)
+    private Map<String, Object> Variables = new HashMap<>(); //stores local variables, (for main loop its global)
 
-    public void setCode(String code){
+    // WARNING! : this method is for only recursion, almost same as normal .run() with minor changes (view other one for explanation via //comments)
+    public void run(String code, Map<String, Object> Var){
         this.Code = code.replace("\n","");
+        UpperVariables = Var; // import variables
+        int FinishLine = Code.length();
+        while (Pointer <= FinishLine){
+            if(Pointer == FinishLine){
+                debug("Program has been executed");
+                break;
+            }
+            String opp = nextOperation();
+            if(opp == null)
+                throw new SwiftSwap("Syntax Error");
+            String[] tokOpp = tokenizeOpp(opp);
+
+            debug(tokOpp);
+            // predicates operation
+            predicateOperations(tokOpp);
+
+            Pointer ++;
+        }
     }
 
-    public void run(final int limit){
-        int ExeCycle = 0; //counts how many times new line was executed
+    public void run(String code){
+
+        this.Code = code.replace("\n","");
 
         int FinishLine = Code.length();
 
