@@ -18,6 +18,11 @@ public class Executor extends toolKit {
 
         while (Pointer <= FinishLine){
 
+            if(Pointer == FinishLine){
+                debug("Program has been executed");
+                break;
+            }
+
             // gets next operation (until ";" or "{" )
             String opp = nextOperation();
 
@@ -28,10 +33,10 @@ public class Executor extends toolKit {
             // tokenize into string array
             String[] tokOpp = tokenizeOpp(opp);
 
-            // predicates operation
-
-
             debug(tokOpp);
+            // predicates operation
+            predicateOperations(tokOpp);
+
             Pointer ++;
         }
     }
@@ -92,10 +97,19 @@ public class Executor extends toolKit {
     }
 
     void predicateOperations(String[] opp){
+        String storageTarget = null;
         switch(opp[0]){
             case "var":
-                Variables.put(opp[1], getValue(opp[3]));
-                debug("new variable created: "+opp[1]+opp[3]);
+                if(opp[2].equals("=")){
+                    float value = arithmeticOperationPreExe(
+                            cutArray(opp,3,opp.length-1));
+                    Variables.put(opp[1], value);
+                    debug("new variable created: "+opp[1]+" = "+value);
+                }
+                else{
+                    Variables.put(opp[1], null);
+                    debug("new variable created: "+opp[1]);
+                }
                 break;
             case "print":
                 break;
@@ -103,51 +117,81 @@ public class Executor extends toolKit {
                 break;
             case "while":
                 break;
+            case "DEBUG!ListVar":
+                String[] keys = Variables.keySet().toArray(new String[0]);
+                Object[] values = Variables.values().toArray();
+                for(int i = 0; i < keys.length; i++) {
+                    System.out.println(keys[i] +" = "+ values[i]);
+                }
+                break;
+            default:
+                if(Variables.containsKey(opp[0]) && opp[1].equals("=")){
+                    float value = arithmeticOperationPreExe(
+                            cutArray(opp,2,opp.length-1));
+                    Variables.put(opp[0], value);
+                    debug("variable "+opp[0]+" = "+value);
+                }
+                else{
+                    throw new SwiftSwap("Syntax error");
+                }
         }
+    }
+
+    // calculates priority with depth
+    float arithmeticOperationPreExe(String [] opp){
+        int operationalDepth = 0; // depth of ()
+        Stack<Integer> subOperationStart = new Stack<>();
 
         for (int i = 0; i < opp.length; i++) {
             String opTok = opp[i];
-            int operationalDepth = 0; // depth of ()
-            Stack<Integer> subOperationStart = new Stack<>();
             switch (opTok){
                 case "(":
                     operationalDepth ++;
                     subOperationStart.push(i+1);
+                    break;
                 case ")":
                     operationalDepth --;
                     if(operationalDepth < 0){
-                        throw new SwiftSwap("now operations to close");
+                        throw new SwiftSwap("no operations to close");
                     }
                     int subOpStart = subOperationStart.pop();
-                    float a = arithmeticOperation(cutArray(opp,subOpStart,i-1));
+                    debug("oppDepth: "+subOpStart + " -> " + (i));
+                    float a = arithmeticOperationExe(cutArray(opp,subOpStart,i-1));
                     opp = replaceArray(opp,subOpStart-1,i,String.valueOf(a));
                     i -= subOpStart;
+                    debug(opp);
+                    break;
             }
         }
-        arithmeticOperation(opp);
+        if(operationalDepth != 0){
+            throw new SwiftSwap("operations are not closed");
+        }
+        debug(opp);
+        //debug(arithmeticOperationExe(opp));
+        return arithmeticOperationExe(opp);
     }
 
-    //this executes operations without arithmetic order
-    float arithmeticOperation(String[] opp){
+    // executes operations without arithmetic order
+    float arithmeticOperationExe(String[] opp){
 
         float output = (float) getValue(opp[0]);
         for (int i = 0; i < opp.length; i++) {
             String opTok = opp[i];
             switch (opTok){
                 case "+":
-                    output += (float) getValue(opp[i-1]);
+                    output += (float) getValue(opp[i+1]);
                     break;
                 case "-":
-                    output -= (float) getValue(opp[i-1]);
+                    output -= (float) getValue(opp[i+1]);
                     break;
                 case "/":
-                    output /= (float) getValue(opp[i-1]);
+                    output /= (float) getValue(opp[i+1]);
                     break;
                 case "*":
-                    output *= (float) getValue(opp[i-1]);
+                    output *= (float) getValue(opp[i+1]);
                     break;
                 case "%":
-                    output %= (float) getValue(opp[i-1]);
+                    output %= (float) getValue(opp[i+1]);
                     break;
             }
         }
@@ -157,14 +201,14 @@ public class Executor extends toolKit {
     private Object getValue(String s){
         Object output;
         try{
-            output = Integer.parseInt(s);
+            output = Float.parseFloat(s);
         }
         catch (NumberFormatException e){
             if(Variables.containsKey(s)){
                 output = Variables.get(s);
             }
             else{
-                throw new SwiftSwap("Variable" + s + " does not exits");
+                throw new SwiftSwap("Variable " + s + " does not exits");
             }
         }
         return output;
@@ -178,5 +222,8 @@ public class Executor extends toolKit {
     }
     private void debug(int i){
         System.out.println("debug: " + i);
+    }
+    private void debug(float f){
+        System.out.println("debug: " + f);
     }
 }
