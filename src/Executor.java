@@ -30,6 +30,7 @@ public class Executor extends toolKit {
 
             // predicates operation
 
+
             debug(tokOpp);
             Pointer ++;
         }
@@ -90,8 +91,83 @@ public class Executor extends toolKit {
         return output;
     }
 
-    void predicateOperation(String[] opp){
-        //writing...
+    void predicateOperations(String[] opp){
+        switch(opp[0]){
+            case "var":
+                Variables.put(opp[1], getValue(opp[3]));
+                debug("new variable created: "+opp[1]+opp[3]);
+                break;
+            case "print":
+                break;
+            case "if":
+                break;
+            case "while":
+                break;
+        }
+
+        for (int i = 0; i < opp.length; i++) {
+            String opTok = opp[i];
+            int operationalDepth = 0; // depth of ()
+            Stack<Integer> subOperationStart = new Stack<>();
+            switch (opTok){
+                case "(":
+                    operationalDepth ++;
+                    subOperationStart.push(i+1);
+                case ")":
+                    operationalDepth --;
+                    if(operationalDepth < 0){
+                        throw new SwiftSwap("now operations to close");
+                    }
+                    int subOpStart = subOperationStart.pop();
+                    float a = arithmeticOperation(cutArray(opp,subOpStart,i-1));
+                    opp = replaceArray(opp,subOpStart-1,i,String.valueOf(a));
+                    i -= subOpStart;
+            }
+        }
+        arithmeticOperation(opp);
+    }
+
+    //this executes operations without arithmetic order
+    float arithmeticOperation(String[] opp){
+
+        float output = (float) getValue(opp[0]);
+        for (int i = 0; i < opp.length; i++) {
+            String opTok = opp[i];
+            switch (opTok){
+                case "+":
+                    output += (float) getValue(opp[i-1]);
+                    break;
+                case "-":
+                    output -= (float) getValue(opp[i-1]);
+                    break;
+                case "/":
+                    output /= (float) getValue(opp[i-1]);
+                    break;
+                case "*":
+                    output *= (float) getValue(opp[i-1]);
+                    break;
+                case "%":
+                    output %= (float) getValue(opp[i-1]);
+                    break;
+            }
+        }
+        return output;
+    }
+
+    private Object getValue(String s){
+        Object output;
+        try{
+            output = Integer.parseInt(s);
+        }
+        catch (NumberFormatException e){
+            if(Variables.containsKey(s)){
+                output = Variables.get(s);
+            }
+            else{
+                throw new SwiftSwap("Variable" + s + " does not exits");
+            }
+        }
+        return output;
     }
 
     private void debug(String s){
