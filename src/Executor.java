@@ -109,7 +109,7 @@ public class Executor extends toolKit {
                 tokenList.add(Character.toString(c));
             }
             else{
-               token.append(c);
+                token.append(c);
             }
         }
         if(!token.isEmpty()){
