@@ -5,9 +5,12 @@ public class Main {
         String code = """
                 var a = 1;
                 var b = 2;
-                if a < b{
-                print !;
+                
+                while a > 10 {
+                print a;
+                a = a+1;
                 }
+                
                 var j = 20;
                 """;
         Executor swiftExe = new Executor();

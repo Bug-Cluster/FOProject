@@ -12,6 +12,7 @@ public class Executor extends toolKit {
         this.Code = code.replace("\n","");
         UpperVariables = Var; // import variables
 
+        Pointer = 0;
         int FinishLine = Code.length();
         while (Pointer <= FinishLine){
             if(Pointer == FinishLine){
@@ -28,6 +29,26 @@ public class Executor extends toolKit {
             predicateOperations(tokOpp);
 
             Pointer ++;
+        }
+    }
+    public void reRun(){
+        Pointer = 0;
+        int FinishLine = Code.length();
+        while (Pointer <= FinishLine) {
+            if (Pointer == FinishLine) {
+                debug("Program has been executed");
+                break;
+            }
+            String opp = nextOperation();
+            if (opp == null)
+                throw new SwiftSwap("Syntax Error");
+            String[] tokOpp = tokenizeOpp(opp);
+
+            debug(tokOpp);
+            // predicates operation
+            predicateOperations(tokOpp);
+
+            Pointer++;
         }
     }
 
@@ -147,8 +168,6 @@ public class Executor extends toolKit {
                 }
                 break;
             case "if":
-                //  0   1   2  3
-                // [if, a, op, b, ...]
                 boolean execute = false;
                 switch (opp[2]){
                     case "=":
@@ -178,9 +197,58 @@ public class Executor extends toolKit {
                     exe.run(subCode,Variables);
                 }
                 break;
-            case "while", "}":
+            case "while":
+                String subLoopCode = findSubCode(Pointer);
+
+                Executor exe = new Executor();
+                switch (opp[2]){
+                    case "=":
+                        if((float)getValue(opp[1]) == (float)getValue(opp[4])){
+                            exe.run(subLoopCode,Variables);
+                        }
+                        while((float)getValue(opp[1]) == (float)getValue(opp[4])){
+                            exe.reRun();
+                        }
+                        break;
+                    case "<":
+                        if(opp[3].equals("=")){
+                            if((float)getValue(opp[1]) <= (float)getValue(opp[4])){
+                                exe.run(subLoopCode,Variables);
+                            }
+                            while ((float)getValue(opp[1]) <= (float)getValue(opp[4])){
+                                exe.reRun();
+                            }
+                        }
+                        else{
+                            if((float)getValue(opp[1]) < (float)getValue(opp[3])){
+                                exe.run(subLoopCode,Variables);
+                            }
+                            while ((float)getValue(opp[1]) < (float)getValue(opp[3])){
+                                exe.reRun();
+                            }
+                        }
+                        break;
+                    case ">":
+                        if(opp[3].equals("=")){
+                            if((float)getValue(opp[1]) >= (float)getValue(opp[4])){
+                                exe.run(subLoopCode,Variables);
+                            }
+                            while ((float)getValue(opp[1]) >= (float)getValue(opp[4])){
+                                exe.reRun();
+                            }
+                        }
+                        else{
+                            if((float)getValue(opp[1]) > (float)getValue(opp[3])){
+                                exe.run(subLoopCode,Variables);
+                            }
+                            while ((float)getValue(opp[1]) > (float)getValue(opp[3])){
+                                exe.reRun();
+                            }
+                        }
+                        break;
+                }
                 break;
-            case "{":
+            case "{", "}":
                 break;
             case "DEBUG!ListVar":
                 String[] keys = Variables.keySet().toArray(new String[0]);
