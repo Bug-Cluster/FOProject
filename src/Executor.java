@@ -11,8 +11,7 @@ public class Executor extends toolKit {
     public void run(String code, Map<String, Object> Var){
         this.Code = code.replace("\n","");
         UpperVariables = Var; // import variables
-        System.out.println(Var);
-        System.out.println(Variables);
+
         int FinishLine = Code.length();
         while (Pointer <= FinishLine){
             if(Pointer == FinishLine){
@@ -101,7 +100,7 @@ public class Executor extends toolKit {
                     token.setLength(0);
                 }
             }
-            else if(c == '=' || c == '+' || c == '-' || c == '/' || c == '*' || c == '%' || c == '(' || c == ')' || c == '{' || c == '}' || c == ':'){
+            else if(c == '=' || c == '+' || c == '-' || c == '/' || c == '*' || c == '%' || c == '(' || c == ')' || c == '{' || c == '}' || c == ':' || c == '>' || c == '<'){
                 if(!token.isEmpty()){
                     tokenList.add(token.toString());
                     token.setLength(0);
@@ -140,11 +139,44 @@ public class Executor extends toolKit {
                 }
                 break;
             case "print":
+                try{
+                    System.out.println(getValue(opp[1]));
+                }
+                catch (SwiftSwap e){
+                    System.out.println(opp[1]);
+                }
                 break;
             case "if":
+                //  0   1   2  3
+                // [if, a, op, b, ...]
+                boolean execute = false;
+                switch (opp[2]){
+                    case "=":
+                        execute = ((float)getValue(opp[1]) == (float)getValue(opp[4]));
+                        break;
+                    case "<":
+                        if(opp[3].equals("=")){
+                            execute = ((float)getValue(opp[1]) <= (float)getValue(opp[4]));
+                        }
+                        else{
+                            execute = ((float)getValue(opp[1]) < (float)getValue(opp[3]));
+                        }
+                        break;
+                    case ">":
+                        if(opp[3].equals("=")){
+                            execute = ((float)getValue(opp[1]) >= (float)getValue(opp[4]));
+                        }
+                        else{
+                            execute = ((float)getValue(opp[1]) > (float)getValue(opp[3]));
+                        }
+                        break;
+                }
+
                 String subCode = findSubCode(Pointer);
-                Executor exe = new Executor();
-                exe.run(subCode,Variables);
+                if(execute){
+                    Executor exe = new Executor();
+                    exe.run(subCode,Variables);
+                }
                 break;
             case "while", "}":
                 break;
@@ -162,7 +194,7 @@ public class Executor extends toolKit {
             default:
                 if(opp[1].equals("=")){
                     if(Variables.containsKey(opp[0])){
-                        System.out.println(opp[0]);
+                        //System.out.println(opp[0]);
                         float value = arithmeticOperationPreExe(
                                 cutArray(opp,2,opp.length-1));
                         Variables.put(opp[0], value);

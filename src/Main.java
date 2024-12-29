@@ -5,13 +5,10 @@ public class Main {
         String code = """
                 var a = 1;
                 var b = 2;
-                DEBUG!ListVar;
-                if {
-                var k = a;
-                DEBUG!ListVar;
+                if a < b{
+                print !;
                 }
                 var j = 20;
-                DEBUG!ListVar;
                 """;
         Executor swiftExe = new Executor();
         swiftExe.run(code);
