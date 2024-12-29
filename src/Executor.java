@@ -11,6 +11,8 @@ public class Executor extends toolKit {
     public void run(String code, Map<String, Object> Var){
         this.Code = code.replace("\n","");
         UpperVariables = Var; // import variables
+        System.out.println(Var);
+        System.out.println(Variables);
         int FinishLine = Code.length();
         while (Pointer <= FinishLine){
             if(Pointer == FinishLine){
@@ -70,7 +72,13 @@ public class Executor extends toolKit {
                 return output.toString();
             }
             else if(c == '{'){
-                //subLoopDepth++;
+                output.append(c);
+                debug("end at " + Code.charAt(Pointer));
+                return output.toString();
+            }
+            else if (c == '}') {
+                output.append(c);
+                debug("end at " + Code.charAt(Pointer));
                 return output.toString();
             }
 
@@ -134,25 +142,39 @@ public class Executor extends toolKit {
             case "print":
                 break;
             case "if":
+                String subCode = findSubCode(Pointer);
+                Executor exe = new Executor();
+                exe.run(subCode,Variables);
                 break;
-            case "while":
+            case "while", "}":
+                break;
+            case "{":
                 break;
             case "DEBUG!ListVar":
                 String[] keys = Variables.keySet().toArray(new String[0]);
                 Object[] values = Variables.values().toArray();
+                System.out.println("==================");
                 for(int i = 0; i < keys.length; i++) {
                     System.out.println(keys[i] +" = "+ values[i]);
                 }
+                System.out.println("==================");
                 break;
             default:
-                if(Variables.containsKey(opp[0]) && opp[1].equals("=")){
-                    float value = arithmeticOperationPreExe(
-                            cutArray(opp,2,opp.length-1));
-                    Variables.put(opp[0], value);
-                    debug("variable "+opp[0]+" = "+value);
-                }
-                else{
-                    throw new SwiftSwap("Syntax error");
+                if(opp[1].equals("=")){
+                    if(Variables.containsKey(opp[0])){
+                        System.out.println(opp[0]);
+                        float value = arithmeticOperationPreExe(
+                                cutArray(opp,2,opp.length-1));
+                        Variables.put(opp[0], value);
+                        debug("variable "+opp[0]+" = "+value);
+                    } else if (UpperVariables.containsKey(opp[0])) {
+                        float value = arithmeticOperationPreExe(
+                                cutArray(opp,2,opp.length-1));
+                        UpperVariables.put(opp[0], value);
+                        debug("variable "+opp[0]+" = "+value);
+                    } else{
+                        throw new SwiftSwap("Syntax error");
+                    }
                 }
         }
     }
@@ -226,24 +248,47 @@ public class Executor extends toolKit {
         catch (NumberFormatException e){
             if(Variables.containsKey(s)){
                 output = Variables.get(s);
-            }
-            else{
+            } else if (UpperVariables != null && UpperVariables.containsKey(s)) {
+                output = UpperVariables.get(s);
+            } else{
                 throw new SwiftSwap("Variable " + s + " does not exits");
             }
         }
         return output;
     }
 
+    private String findSubCode(int startPoint){
+        int operationalDepth = 0;
+        int codeStart = -1;
+        for (int i = startPoint; i < Code.length(); i++) {
+            if(Code.charAt(i) == '{'){
+                if(operationalDepth == 0){
+                    codeStart = i+1;
+                }
+                operationalDepth ++;
+            }
+            if(Code.charAt(i) == '}'){
+                operationalDepth --;
+            }
+            if(operationalDepth == 0 && codeStart != -1){
+                Pointer = i;
+                return cutString(Code, codeStart, i-1);
+            }
+        }
+        throw new SwiftSwap("end of code not found");
+    }
+
+    // for debug, not part of actual code
     private void debug(String s){
-        System.out.println("debug: " + s);
+        //System.out.println("debug: " + s);
     }
     private void debug(String[] s){
-        System.out.println("debug: " + Arrays.toString(s));
+        //System.out.println("debug: " + Arrays.toString(s));
     }
     private void debug(int i){
-        System.out.println("debug: " + i);
+        //System.out.println("debug: " + i);
     }
     private void debug(float f){
-        System.out.println("debug: " + f);
+        //System.out.println("debug: " + f);
     }
 }

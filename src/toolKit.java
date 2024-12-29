@@ -64,4 +64,22 @@ public class toolKit {
         }
         return returnArray;
     }
+
+    String cutString(String s, int start, int end){
+        if(end < start){
+            throw new IllegalArgumentException("end should be greater than start");
+        }
+        if(end > s.length() - 1){
+            throw new IllegalArgumentException("end should be in range of array");
+        }
+        if(start < 0){
+            throw new IllegalArgumentException("start should be positive");
+        }
+
+        StringBuilder output = new StringBuilder();
+        for (int i = start; i <= end; i++) {
+            output.append(s.charAt(i));
+        }
+        return output.toString();
+    }
 }

@@ -3,9 +3,14 @@ import java.util.Arrays;
 public class Main {
     public static void main(String[] args) {
         String code = """
-                var a = 10 + (10*(20-10));
-                a = 20;
-                var b = 100-5;
+                var a = 1;
+                var b = 2;
+                DEBUG!ListVar;
+                if {
+                var k = a;
+                DEBUG!ListVar;
+                }
+                var j = 20;
                 DEBUG!ListVar;
                 """;
         Executor swiftExe = new Executor();
