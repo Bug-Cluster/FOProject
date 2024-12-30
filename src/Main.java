@@ -33,20 +33,18 @@ public class Main {
                 
                 while N > 0 {
                     Sum = Sum + N;
-                    N = N - 1;
+                    N --;
                 }
                 print Sum;
-                DEBUG!ListVar;
                 """;
         String FactorialOfN = """
                 let N = 5;
                 let Fract = 1;
                 while N > 0 {
                     Fract = Fract * N;
-                    N  = N -1;
+                    N --;
                 }
                 print Fract;
-                DEBUG!ListVar;
                 """;
         String GCD = """
                 let a = 48;
@@ -58,8 +56,8 @@ public class Main {
                         var temp = a;
                         a = b;
                         b = temp;
-                    } 
-                    
+                    }
+                
                     if b == 0 {
                         GCD = a;
                     }
@@ -70,13 +68,13 @@ public class Main {
         String ReverseNum = """
                let number = 1234;
                let reversedNumber = 0;
-                
+               
                while number != 0 {
                     let lastDigit = number % 10;
                     reversedNumber = (reversedNumber * 10) + lastDigit;
                     number = number / 10;
                }
-                
+               
                print reversedNumber;
                 """;
 
