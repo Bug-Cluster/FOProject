@@ -124,7 +124,7 @@ public class Executor extends toolKit {
                     token.setLength(0);
                 }
             }
-            else if(c == '=' || c == '+' || c == '-' || c == '/' || c == '*' || c == '%' || c == '(' || c == ')' || c == '{' || c == '}' || c == ':' || c == '>' || c == '<'){
+            else if(c == '=' || c == '+' || c == '-' || c == '/' || c == '*' || c == '%' || c == '(' || c == ')' || c == '{' || c == '}' || c == ':' || c == '>' || c == '<' || c == '!'){
                 if(!token.isEmpty()){
                     tokenList.add(token.toString());
                     token.setLength(0);
@@ -192,6 +192,9 @@ public class Executor extends toolKit {
                             execute = ((float)getValue(opp[1]) > (float)getValue(opp[3]));
                         }
                         break;
+                    case "!":
+                        execute = ((float)getValue(opp[1]) != (float)getValue(opp[4]));
+                        break;
                 }
 
                 String subCode = findSubCode(Pointer);
@@ -220,6 +223,19 @@ public class Executor extends toolKit {
                             }
                         }
                         while((float)getValue(opp[1]) == (float)getValue(opp[4])){
+                            exe.reRun();
+                        }
+                        break;
+                    case "!":
+                        if((float)getValue(opp[1]) != (float)getValue(opp[4])){
+                            if(UpperVariables == null){
+                                exe.run(subLoopCode,Variables, new HashMap<>());
+                            }
+                            else {
+                                exe.run(subLoopCode,UpperVariables, Variables);
+                            }
+                        }
+                        while((float)getValue(opp[1]) != (float)getValue(opp[4])){
                             exe.reRun();
                         }
                         break;
@@ -293,8 +309,7 @@ public class Executor extends toolKit {
                 System.out.println("=================");
                 break;
             case "exit":
-                throw new SwiftSwap("Exit");
-                //break;
+                throw new SwiftSwap("Force Exit");
             default:
                 if(opp[1].equals("=")){
                     if(Variables.containsKey(opp[0])){
@@ -308,6 +323,26 @@ public class Executor extends toolKit {
                                 cutArray(opp,2,opp.length-1));
                         UpperVariables.put(opp[0], value);
                         debug("variable "+opp[0]+" = "+value);
+                    } else{
+                        throw new SwiftSwap("Syntax error");
+                    }
+                }
+                else if(opp[1].equals("-")){
+                    if(Variables.containsKey(opp[0])){
+                        Variables.put(opp[0], (float)getValue(opp[0]) - 1);
+                    } else if (UpperVariables != null && UpperVariables.containsKey(opp[0])) {
+
+                        UpperVariables.put(opp[0], (float)getValue(opp[0]) - 1);
+                    } else{
+                        throw new SwiftSwap("Syntax error");
+                    }
+                }
+                else if(opp[1].equals("+")){
+                    if(Variables.containsKey(opp[0])){
+                        Variables.put(opp[0], (float)getValue(opp[0]) + 1);
+                    } else if (UpperVariables != null && UpperVariables.containsKey(opp[0])) {
+
+                        UpperVariables.put(opp[0], (float)getValue(opp[0]) + 1);
                     } else{
                         throw new SwiftSwap("Syntax error");
                     }

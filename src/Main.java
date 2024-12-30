@@ -5,6 +5,17 @@ public class Main {
         String DebugCode = """
                 var A = 20;
                 let B = 10;
+                var K = 15;
+                
+                if A != B {
+                    print e1;
+                }
+                
+                K ++;
+                while K > 0{
+                    K --;
+                    print K;
+                }
                 
                 if A > 0{
                     var c = 10;
@@ -88,6 +99,6 @@ public class Main {
                 
                 """;
         Executor swiftExe = new Executor();
-        swiftExe.run(IsPalindrome);
+        swiftExe.run(DebugCode);
     }
 }
