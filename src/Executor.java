@@ -4,13 +4,14 @@ public class Executor extends toolKit {
 
     private String Code; //code it runs
     private int Pointer = 0; //tracks where executor is at
-    private Map<String, Object> UpperVariables; //stores global variables (used only for sub loop in recursion)
-    private Map<String, Object> Variables = new HashMap<>(); //stores local variables, (for main loop its global)
+    private Map<String, Object> UpperVariables = null; //stores global variables (used only for sub loop in recursion)
+    private Map<String, Object> Variables; //stores local variables, (for main loop its global)
 
     // WARNING! : this method is for only recursion, almost same as normal .run() with minor changes (view other one for explanation via //comments)
-    public void run(String code, Map<String, Object> Var){
+    public void run(String code, Map<String, Object> Var, Map<String, Object> Varr){
         this.Code = code.replace("\n","");
         UpperVariables = Var; // import variables
+        Variables = Varr;
 
         Pointer = 0;
         int FinishLine = Code.length();
@@ -21,7 +22,7 @@ public class Executor extends toolKit {
             }
             String opp = nextOperation();
             if(opp == null)
-                throw new SwiftSwap("Syntax Error");
+                break;
             String[] tokOpp = tokenizeOpp(opp);
 
             debug(tokOpp);
@@ -53,6 +54,8 @@ public class Executor extends toolKit {
     }
 
     public void run(String code){
+
+        Variables = new HashMap<>();
 
         this.Code = code.replace("\n","");
 
@@ -147,7 +150,7 @@ public class Executor extends toolKit {
     void predicateOperations(String[] opp){
         String storageTarget = null;
         switch(opp[0]){
-            case "var":
+            case "var", "let":
                 if(opp[2].equals("=")){
                     float value = arithmeticOperationPreExe(
                             cutArray(opp,3,opp.length-1));
@@ -194,7 +197,12 @@ public class Executor extends toolKit {
                 String subCode = findSubCode(Pointer);
                 if(execute){
                     Executor exe = new Executor();
-                    exe.run(subCode,Variables);
+                    if(UpperVariables == null){
+                        exe.run(subCode,Variables, new HashMap<>());
+                    }
+                    else {
+                        exe.run(subCode,UpperVariables, Variables);
+                    }
                 }
                 break;
             case "while":
@@ -204,7 +212,12 @@ public class Executor extends toolKit {
                 switch (opp[2]){
                     case "=":
                         if((float)getValue(opp[1]) == (float)getValue(opp[4])){
-                            exe.run(subLoopCode,Variables);
+                            if(UpperVariables == null){
+                                exe.run(subLoopCode,Variables, new HashMap<>());
+                            }
+                            else {
+                                exe.run(subLoopCode,UpperVariables, Variables);
+                            }
                         }
                         while((float)getValue(opp[1]) == (float)getValue(opp[4])){
                             exe.reRun();
@@ -213,7 +226,12 @@ public class Executor extends toolKit {
                     case "<":
                         if(opp[3].equals("=")){
                             if((float)getValue(opp[1]) <= (float)getValue(opp[4])){
-                                exe.run(subLoopCode,Variables);
+                                if(UpperVariables == null){
+                                    exe.run(subLoopCode,Variables, new HashMap<>());
+                                }
+                                else {
+                                    exe.run(subLoopCode,UpperVariables, Variables);
+                                }
                             }
                             while ((float)getValue(opp[1]) <= (float)getValue(opp[4])){
                                 exe.reRun();
@@ -221,7 +239,12 @@ public class Executor extends toolKit {
                         }
                         else{
                             if((float)getValue(opp[1]) < (float)getValue(opp[3])){
-                                exe.run(subLoopCode,Variables);
+                                if(UpperVariables == null){
+                                    exe.run(subLoopCode,Variables, new HashMap<>());
+                                }
+                                else {
+                                    exe.run(subLoopCode,UpperVariables, Variables);
+                                }
                             }
                             while ((float)getValue(opp[1]) < (float)getValue(opp[3])){
                                 exe.reRun();
@@ -231,7 +254,12 @@ public class Executor extends toolKit {
                     case ">":
                         if(opp[3].equals("=")){
                             if((float)getValue(opp[1]) >= (float)getValue(opp[4])){
-                                exe.run(subLoopCode,Variables);
+                                if(UpperVariables == null){
+                                    exe.run(subLoopCode,Variables, new HashMap<>());
+                                }
+                                else {
+                                    exe.run(subLoopCode,UpperVariables, Variables);
+                                }
                             }
                             while ((float)getValue(opp[1]) >= (float)getValue(opp[4])){
                                 exe.reRun();
@@ -239,7 +267,12 @@ public class Executor extends toolKit {
                         }
                         else{
                             if((float)getValue(opp[1]) > (float)getValue(opp[3])){
-                                exe.run(subLoopCode,Variables);
+                                if(UpperVariables == null){
+                                    exe.run(subLoopCode,Variables, new HashMap<>());
+                                }
+                                else {
+                                    exe.run(subLoopCode,UpperVariables, Variables);
+                                }
                             }
                             while ((float)getValue(opp[1]) > (float)getValue(opp[3])){
                                 exe.reRun();
@@ -253,12 +286,15 @@ public class Executor extends toolKit {
             case "DEBUG!ListVar":
                 String[] keys = Variables.keySet().toArray(new String[0]);
                 Object[] values = Variables.values().toArray();
-                System.out.println("==================");
+                System.out.println("====Variables====");
                 for(int i = 0; i < keys.length; i++) {
                     System.out.println(keys[i] +" = "+ values[i]);
                 }
-                System.out.println("==================");
+                System.out.println("=================");
                 break;
+            case "exit":
+                throw new SwiftSwap("Exit");
+                //break;
             default:
                 if(opp[1].equals("=")){
                     if(Variables.containsKey(opp[0])){
@@ -267,7 +303,7 @@ public class Executor extends toolKit {
                                 cutArray(opp,2,opp.length-1));
                         Variables.put(opp[0], value);
                         debug("variable "+opp[0]+" = "+value);
-                    } else if (UpperVariables.containsKey(opp[0])) {
+                    } else if (UpperVariables != null && UpperVariables.containsKey(opp[0])) {
                         float value = arithmeticOperationPreExe(
                                 cutArray(opp,2,opp.length-1));
                         UpperVariables.put(opp[0], value);
