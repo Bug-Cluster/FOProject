@@ -71,7 +71,7 @@ public class Main {
                let number = 1234;
                let reversedNumber = 0;
                 
-               while number > 0 {
+               while number != 0 {
                     let lastDigit = number % 10;
                     reversedNumber = (reversedNumber * 10) + lastDigit;
                     number = number / 10;
@@ -100,7 +100,7 @@ public class Main {
                 """;
         String SumOfDigits = """
                 var sum = 0;
-                var num = 123;
+                var num = 1234;
                 
                         while num > 0 {
                             sum = sum + (num % 10);
@@ -110,14 +110,15 @@ public class Main {
                 """;
 
         String MultOfDigits = """
-                var sum = 0;
-                var num = 123;
+                var N = 5;
+                var S = 0;
                 
-                        while num > 0 {
-                            sum = sum + (num % 10);
-                            num = num / 10;
-                        }
-                        print sum;
+                var i = 10;
+                while i > 0{
+                    S = S + N;
+                    print S;
+                    i--;
+                }
                 """;
         Executor swiftExe = new Executor();
         swiftExe.run(MultOfDigits);
