@@ -4,11 +4,11 @@ public class Executor extends toolKit {
 
     private String Code; //code it runs
     private int Pointer = 0; //tracks where executor is at
-    private Map<String, Object> UpperVariables = null; //stores global variables (used only for sub loop in recursion)
-    private Map<String, Object> Variables; //stores local variables, (for main loop its global)
+    private Map<String, Integer> UpperVariables = null; //stores global variables (used only for sub loop in recursion)
+    private Map<String, Integer> Variables; //stores local variables, (for main loop its global)
 
     // WARNING! : this method is for only recursion, almost same as normal .run() with minor changes (view other one for explanation via //comments)
-    public void run(String code, Map<String, Object> Var, Map<String, Object> Varr){
+    public void run(String code, Map<String, Integer> Var, Map<String, Integer> Varr){
         this.Code = code.replace("\n","");
         UpperVariables = Var; // import variables
         Variables = Varr;
@@ -42,7 +42,7 @@ public class Executor extends toolKit {
             }
             String opp = nextOperation();
             if (opp == null)
-                throw new SwiftSwap("Syntax Error");
+                break;
             String[] tokOpp = tokenizeOpp(opp);
 
             debug(tokOpp);
@@ -152,7 +152,7 @@ public class Executor extends toolKit {
         switch(opp[0]){
             case "var", "let":
                 if(opp[2].equals("=")){
-                    float value = arithmeticOperationPreExe(
+                    int value = arithmeticOperationPreExe(
                             cutArray(opp,3,opp.length-1));
                     Variables.put(opp[1], value);
                     debug("new variable created: "+opp[1]+" = "+value);
@@ -174,26 +174,26 @@ public class Executor extends toolKit {
                 boolean execute = false;
                 switch (opp[2]){
                     case "=":
-                        execute = ((float)getValue(opp[1]) == (float)getValue(opp[4]));
+                        execute = ((int)getValue(opp[1]) == (int)getValue(opp[4]));
                         break;
                     case "<":
                         if(opp[3].equals("=")){
-                            execute = ((float)getValue(opp[1]) <= (float)getValue(opp[4]));
+                            execute = ((int)getValue(opp[1]) <= (int)getValue(opp[4]));
                         }
                         else{
-                            execute = ((float)getValue(opp[1]) < (float)getValue(opp[3]));
+                            execute = ((int)getValue(opp[1]) < (int)getValue(opp[3]));
                         }
                         break;
                     case ">":
                         if(opp[3].equals("=")){
-                            execute = ((float)getValue(opp[1]) >= (float)getValue(opp[4]));
+                            execute = ((int)getValue(opp[1]) >= (int)getValue(opp[4]));
                         }
                         else{
-                            execute = ((float)getValue(opp[1]) > (float)getValue(opp[3]));
+                            execute = ((int)getValue(opp[1]) > (int)getValue(opp[3]));
                         }
                         break;
                     case "!":
-                        execute = ((float)getValue(opp[1]) != (float)getValue(opp[4]));
+                        execute = ((int)getValue(opp[1]) != (int)getValue(opp[4]));
                         break;
                 }
 
@@ -214,7 +214,7 @@ public class Executor extends toolKit {
                 Executor exe = new Executor();
                 switch (opp[2]){
                     case "=":
-                        if((float)getValue(opp[1]) == (float)getValue(opp[4])){
+                        if((int)getValue(opp[1]) == (int)getValue(opp[4])){
                             if(UpperVariables == null){
                                 exe.run(subLoopCode,Variables, new HashMap<>());
                             }
@@ -222,12 +222,12 @@ public class Executor extends toolKit {
                                 exe.run(subLoopCode,UpperVariables, Variables);
                             }
                         }
-                        while((float)getValue(opp[1]) == (float)getValue(opp[4])){
+                        while((int)getValue(opp[1]) == (int)getValue(opp[4])){
                             exe.reRun();
                         }
                         break;
                     case "!":
-                        if((float)getValue(opp[1]) != (float)getValue(opp[4])){
+                        if((int)getValue(opp[1]) != (int)getValue(opp[4])){
                             if(UpperVariables == null){
                                 exe.run(subLoopCode,Variables, new HashMap<>());
                             }
@@ -235,13 +235,13 @@ public class Executor extends toolKit {
                                 exe.run(subLoopCode,UpperVariables, Variables);
                             }
                         }
-                        while((float)getValue(opp[1]) != (float)getValue(opp[4])){
+                        while((int)getValue(opp[1]) != (int)getValue(opp[4])){
                             exe.reRun();
                         }
                         break;
                     case "<":
                         if(opp[3].equals("=")){
-                            if((float)getValue(opp[1]) <= (float)getValue(opp[4])){
+                            if((int)getValue(opp[1]) <= (int)getValue(opp[4])){
                                 if(UpperVariables == null){
                                     exe.run(subLoopCode,Variables, new HashMap<>());
                                 }
@@ -249,12 +249,12 @@ public class Executor extends toolKit {
                                     exe.run(subLoopCode,UpperVariables, Variables);
                                 }
                             }
-                            while ((float)getValue(opp[1]) <= (float)getValue(opp[4])){
+                            while ((int)getValue(opp[1]) <= (int)getValue(opp[4])){
                                 exe.reRun();
                             }
                         }
                         else{
-                            if((float)getValue(opp[1]) < (float)getValue(opp[3])){
+                            if((int)getValue(opp[1]) < (int)getValue(opp[3])){
                                 if(UpperVariables == null){
                                     exe.run(subLoopCode,Variables, new HashMap<>());
                                 }
@@ -262,14 +262,14 @@ public class Executor extends toolKit {
                                     exe.run(subLoopCode,UpperVariables, Variables);
                                 }
                             }
-                            while ((float)getValue(opp[1]) < (float)getValue(opp[3])){
+                            while ((int)getValue(opp[1]) < (int)getValue(opp[3])){
                                 exe.reRun();
                             }
                         }
                         break;
                     case ">":
                         if(opp[3].equals("=")){
-                            if((float)getValue(opp[1]) >= (float)getValue(opp[4])){
+                            if((int)getValue(opp[1]) >= (int)getValue(opp[4])){
                                 if(UpperVariables == null){
                                     exe.run(subLoopCode,Variables, new HashMap<>());
                                 }
@@ -277,12 +277,12 @@ public class Executor extends toolKit {
                                     exe.run(subLoopCode,UpperVariables, Variables);
                                 }
                             }
-                            while ((float)getValue(opp[1]) >= (float)getValue(opp[4])){
+                            while ((int)getValue(opp[1]) >= (int)getValue(opp[4])){
                                 exe.reRun();
                             }
                         }
                         else{
-                            if((float)getValue(opp[1]) > (float)getValue(opp[3])){
+                            if((int)getValue(opp[1]) > (int)getValue(opp[3])){
                                 if(UpperVariables == null){
                                     exe.run(subLoopCode,Variables, new HashMap<>());
                                 }
@@ -290,7 +290,7 @@ public class Executor extends toolKit {
                                     exe.run(subLoopCode,UpperVariables, Variables);
                                 }
                             }
-                            while ((float)getValue(opp[1]) > (float)getValue(opp[3])){
+                            while ((int)getValue(opp[1]) > (int)getValue(opp[3])){
                                 exe.reRun();
                             }
                         }
@@ -314,12 +314,12 @@ public class Executor extends toolKit {
                 if(opp[1].equals("=")){
                     if(Variables.containsKey(opp[0])){
                         //System.out.println(opp[0]);
-                        float value = arithmeticOperationPreExe(
+                        int value = arithmeticOperationPreExe(
                                 cutArray(opp,2,opp.length-1));
                         Variables.put(opp[0], value);
                         debug("variable "+opp[0]+" = "+value);
                     } else if (UpperVariables != null && UpperVariables.containsKey(opp[0])) {
-                        float value = arithmeticOperationPreExe(
+                        int value = arithmeticOperationPreExe(
                                 cutArray(opp,2,opp.length-1));
                         UpperVariables.put(opp[0], value);
                         debug("variable "+opp[0]+" = "+value);
@@ -329,20 +329,20 @@ public class Executor extends toolKit {
                 }
                 else if(opp[1].equals("-")){
                     if(Variables.containsKey(opp[0])){
-                        Variables.put(opp[0], (float)getValue(opp[0]) - 1);
+                        Variables.put(opp[0], (int)getValue(opp[0]) - 1);
                     } else if (UpperVariables != null && UpperVariables.containsKey(opp[0])) {
 
-                        UpperVariables.put(opp[0], (float)getValue(opp[0]) - 1);
+                        UpperVariables.put(opp[0], (int)getValue(opp[0]) - 1);
                     } else{
                         throw new SwiftSwap("Syntax error");
                     }
                 }
                 else if(opp[1].equals("+")){
                     if(Variables.containsKey(opp[0])){
-                        Variables.put(opp[0], (float)getValue(opp[0]) + 1);
+                        Variables.put(opp[0], (int)getValue(opp[0]) + 1);
                     } else if (UpperVariables != null && UpperVariables.containsKey(opp[0])) {
 
-                        UpperVariables.put(opp[0], (float)getValue(opp[0]) + 1);
+                        UpperVariables.put(opp[0], (int)getValue(opp[0]) + 1);
                     } else{
                         throw new SwiftSwap("Syntax error");
                     }
@@ -351,7 +351,7 @@ public class Executor extends toolKit {
     }
 
     // calculates priority with depth
-    float arithmeticOperationPreExe(String [] opp){
+    int arithmeticOperationPreExe(String [] opp){
         int operationalDepth = 0; // depth of ()
         Stack<Integer> subOperationStart = new Stack<>();
 
@@ -369,7 +369,7 @@ public class Executor extends toolKit {
                     }
                     int subOpStart = subOperationStart.pop();
                     debug("oppDepth: "+subOpStart + " -> " + (i));
-                    float a = arithmeticOperationExe(cutArray(opp,subOpStart,i-1));
+                    int a = arithmeticOperationExe(cutArray(opp,subOpStart,i-1));
                     opp = replaceArray(opp,subOpStart-1,i,String.valueOf(a));
                     i -= subOpStart;
                     debug(opp);
@@ -385,26 +385,26 @@ public class Executor extends toolKit {
     }
 
     // executes operations without arithmetic order
-    float arithmeticOperationExe(String[] opp){
+    int arithmeticOperationExe(String[] opp){
 
-        float output = (float) getValue(opp[0]);
+        int output = (int) getValue(opp[0]);
         for (int i = 0; i < opp.length; i++) {
             String opTok = opp[i];
             switch (opTok){
                 case "+":
-                    output += (float) getValue(opp[i+1]);
+                    output += (int) getValue(opp[i+1]);
                     break;
                 case "-":
-                    output -= (float) getValue(opp[i+1]);
+                    output -= (int) getValue(opp[i+1]);
                     break;
                 case "/":
-                    output /= (float) getValue(opp[i+1]);
+                    output /= (int) getValue(opp[i+1]);
                     break;
                 case "*":
-                    output *= (float) getValue(opp[i+1]);
+                    output *= (int) getValue(opp[i+1]);
                     break;
                 case "%":
-                    output %= (float) getValue(opp[i+1]);
+                    output %= (int) getValue(opp[i+1]);
                     break;
             }
         }
@@ -414,7 +414,7 @@ public class Executor extends toolKit {
     private Object getValue(String s){
         Object output;
         try{
-            output = Float.parseFloat(s);
+            output = Integer.parseInt(s);
         }
         catch (NumberFormatException e){
             if(Variables.containsKey(s)){

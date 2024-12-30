@@ -86,7 +86,7 @@ public class Main {
                 let original = x;
                 
                 let digit = 0;
-                while x > 0 {
+                while x != 0 {
                     digit = x % 10;
                     reversed = reversed * 10 + digit;
                     x = x/10;
@@ -98,7 +98,28 @@ public class Main {
                 }
                 
                 """;
+        String SumOfDigits = """
+                var sum = 0;
+                var num = 123;
+                
+                        while num > 0 {
+                            sum = sum + (num % 10);
+                            num = num / 10;
+                        }
+                        print sum;
+                """;
+
+        String MultOfDigits = """
+                var sum = 0;
+                var num = 123;
+                
+                        while num > 0 {
+                            sum = sum + (num % 10);
+                            num = num / 10;
+                        }
+                        print sum;
+                """;
         Executor swiftExe = new Executor();
-        swiftExe.run(DebugCode);
+        swiftExe.run(MultOfDigits);
     }
 }
