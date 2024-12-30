@@ -5,7 +5,7 @@ public class Main {
         String DebugCode = """
                 var A = 20;
                 let B = 10;
-                var K = 15;
+                var K = 4;
                 
                 if A != B {
                     print e1;
@@ -13,9 +13,11 @@ public class Main {
                 
                 K ++;
                 while K > 0{
+                    var B = 20;
                     K --;
-                    print K;
+                    print B;
                 }
+                print B;
                 
                 if A > 0{
                     var c = 10;
@@ -119,6 +121,6 @@ public class Main {
                 }
                 """;
         Executor swiftExe = new Executor();
-        swiftExe.run(MultOfDigits);
+        swiftExe.run(DebugCode);
     }
 }

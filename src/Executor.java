@@ -151,6 +151,9 @@ public class Executor extends toolKit {
         String storageTarget = null;
         switch(opp[0]){
             case "var", "let":
+                if(UpperVariables == null && Variables.containsKey(opp[1]))
+                    throw new SwiftSwap("Variable " + opp[1]+ " already exists!");
+
                 if(opp[2].equals("=")){
                     int value = arithmeticOperationPreExe(
                             cutArray(opp,3,opp.length-1));
